@@ -5,11 +5,11 @@ There comes a time when user access to CRDB needs to be tested for vulnerabiliti
 
 Using an admin user, you can see a list of user accounts by running:
 ```
-SELECT * FROM system.users;
+SELECT username, password FROM system.users;
 (paste output here)
 ```
 
-This shows you users/roles (`users` is a synonym for `role` in CRDB, [see caveats here](https://www.cockroachlabs.com/docs/stable/create-role.html)), a hashed password, and `IsRole`, which indicates if the user is a role. 
+This shows you users/roles (`users` is a synonym for `role` in CRDB, [see caveats here](https://www.cockroachlabs.com/docs/stable/create-role.html)), and a hashed password.
 
 If the `password` field is populated, that indicates the user can use password authenticated.  You can optionally choose to [use certificate based authentication for users](https://www.cockroachlabs.com/docs/stable/authentication.html#client-authentication) and remove the password all together.  To remove password authentication for a user, you can run the following from an `admin` account:
 ```
