@@ -18,6 +18,7 @@ ALTER USER username WITH PASSWORD NULL;
 
 Once run - the user can no longer access CRDB with a password - so make sure you have your cluster properly configured first!  
 
+### Finding old passwords
 But let's say you instead want to check to see the last time a user has updated their password.  You can leverage a hidden column in CRDB called `crdb_internal_mvcc_timestamp` to determine when a row was last updated.  You can read more about that column [here](https://www.cockroachlabs.com/docs/releases/v20.2.0-alpha.3.html) and [here](https://github.com/cockroachdb/cockroach/pull/51494).  You can think of it as an under-the-hood proxy for a `last_updated_at` timestamp.  
 
 You can convert the nanoseconds to a timestamp using `crdb_internal_mvcc_timestamp/1000000000)::int::timestamp`.
@@ -31,6 +32,11 @@ The `last_updated` column indicates when that row was last updated.  NOTE: there
 
 ### Using `VALID UNTIL`
 If you are using password based authentication, you could optionally enforce password TTL.  The `VALID UNTIL` parameter sets the time until which the password is valid.  Once that lapses, the user can no longer access the database.  Read more about [VALID UNTIL here](https://www.cockroachlabs.com/docs/stable/create-user.html#parameters).
+
+### Finding default passwords
+Have you used default passwords for users in the past?  Do you know if they were ever changed?  
+
+When run with a priviledged user, this script will go through and identify any users which match a configurable default password.  It will also generate the `ALTER` statement to remove password authentication altogether.  
 
 
 
