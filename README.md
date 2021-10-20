@@ -4,7 +4,7 @@
 There comes a time when user access to CRDB needs to be tested for vulnerabilities.  Once such vulnerability is an old or default password.  If default passwords still exist for a period of time, they should be changed or removed.  
 
 Using an admin user, you can see a list of user accounts by running:
-```
+```sql
 SELECT username, password FROM system.users;
 (paste output here)
 ```
@@ -12,7 +12,7 @@ SELECT username, password FROM system.users;
 This shows you users/roles (`users` is a synonym for `role` in CRDB, [see caveats here](https://www.cockroachlabs.com/docs/stable/create-role.html)), and a hashed password.
 
 If the `password` field is populated, that indicates the user can use password authenticated.  You can optionally choose to [use certificate based authentication for users](https://www.cockroachlabs.com/docs/stable/authentication.html#client-authentication) and remove the password all together.  To remove password authentication for a user, you can run the following from an `admin` account:
-```
+```sql
 ALTER USER username WITH PASSWORD NULL;
 ```
 
@@ -24,7 +24,7 @@ But let's say you instead want to check to see the last time a user has updated 
 You can convert the nanoseconds to a timestamp using `crdb_internal_mvcc_timestamp/1000000000)::int::timestamp`.
 
 To see when passwords were last updated, you can run:
-```
+```sql
 SELECT username, password, "isRole", ((crdb_internal_mvcc_timestamp/1000000000)::int::timestamp)-now() as "last_updated";
 ```
 
