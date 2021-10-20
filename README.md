@@ -1,5 +1,5 @@
 # crdb_check_user_passwords
-script to check for default user passwords
+
 
 There comes a time when user access to CRDB needs to be tested for vulnerabilities.  Once such vulnerability is an old or default password.  If default passwords still exist for a period of time, they should be changed or removed.  
 
