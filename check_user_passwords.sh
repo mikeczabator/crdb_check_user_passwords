@@ -3,7 +3,7 @@
 ### START CONFIG
 admin_username="root"
 admin_password="" #optional
-hostname="test-crdb.us-west-2.aws.ddnw.net"
+hostname="my.hostname.net"
 post="26257"
 
 # action OPTIONS
@@ -17,12 +17,15 @@ cockroach_connection_params=$(cat <<EOF
 EOF
 )
 
-get_user_query='select username, "isRole", now(),crdb_internal.cluster_name() from system.users;'
-password_match='change-me'
+#password you want to search for
+password_match='old-password'
+
+#length of new password
 new_password_length=30
 
 ### END CONFIG
 
+get_user_query='select username, "isRole", now(),crdb_internal.cluster_name() from system.users;'
 tls_user_message=$(cat <<'EOF'
 Hello, \\nYour username \`$username\` on CockroachDB cluster \`$cluster_name\` was identified as still having a default password.\\n\\nYour password will be removed since CockroachDB now authenticates from the CLI with TLS - you can learn how to connect via the CLI with TLS here: https://www.cockroachlabs.com/docs/stable/authentication.html#client-authentication\\n\\nPlease ping us in \#slack-channel if you have any questions!
 EOF
