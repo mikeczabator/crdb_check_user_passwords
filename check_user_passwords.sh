@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ### START CONFIG
 admin_username="root"
 admin_password="" #optional
