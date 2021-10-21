@@ -3,15 +3,33 @@
 
 There comes a time when user access to CRDB needs to be tested for vulnerabilities.  Once such vulnerability is an old or default password.  If default passwords still exist for a period of time, they should be changed or removed.  
 
+Jump to: 
+- [Find old passwords](./README.md#finding-old-passwords)
+- [Find default passwords](./README.md#finding-default-passwords)
+*** 
+
 Using an admin user, you can see a list of user accounts by running:
 ```sql
-SELECT username, password FROM system.users;
-(paste output here)
+root@my.hostname.net:26257/defaultdb> SELECT username, "hashedPassword" FROM system.users;
+        username        |                        hashedPassword
+------------------------+---------------------------------------------------------------
+  admin                 |
+  mike                  |
+  miketest              | $2a$10$fuSTJLfmljcbTacVH3auseOLebUoJdmxxbF7dpQVqZT12Gw6wXUMq
+  miketest-app          | $2a$10$fI/VRdur.9roodX5yHfiYOlceTrWBEFxCbxJd50MaFu9Cs5AOCMti
+  miketest-dba          | $2a$10$dqNoGduCAyK.4vskJbuZ.er1sQs9nEJ4kbs7h2DX.fpssy0aB3f2C
+  miketest1             | $2a$10$sLJdsQDF6phB9KzaZuJddORklZx9nxKvSx2/5V9pAk4GlR6NBFfAq
+  miketest_app          | $2a$10$aOvEhOaPTvbPz62FDuQeb.DrCTxLdvTpWcc54GbGgr9WrYLbURtea
+  miketest_dba          | $2a$10$ad.gAh6MNl1kLO9dVFFovO4a3xC0BHgHFFkbqFKHQvnvNnvL2Mpzm
+  root                  | $2e$10$VDX0o5s46XxrJTrNbU8qve1tYxwfrctmrbeth40cxaFsfRU8T6zgf
+(9 rows)
+
+Time: 3ms
 ```
 
 This shows you users/roles (`users` is a synonym for `role` in CRDB, [see caveats here](https://www.cockroachlabs.com/docs/stable/create-role.html)), and a hashed password.
 
-If the `password` field is populated, that indicates the user can use password authenticated.  You can optionally choose to [use certificate based authentication for users](https://www.cockroachlabs.com/docs/stable/authentication.html#client-authentication) and remove the password all together.  To remove password authentication for a user, you can run the following from an `admin` account:
+If the `hashedPassword` field is populated, that indicates the user can use password authentication.  You can optionally choose to [use certificate based authentication for users](https://www.cockroachlabs.com/docs/stable/authentication.html#client-authentication) and remove the password all together.  To remove password authentication for a user, you can run the following from an `admin` account:
 ```sql
 ALTER USER username WITH PASSWORD NULL;
 ```
@@ -36,9 +54,9 @@ If you are using password based authentication, you could optionally enforce pas
 ## Finding default passwords
 Have you used default passwords for users in the past?  Do you know if they were ever changed?  
 
-When run with a priviledged user, this script will go through and identify any users which match a configurable default password.  It can also generate the `ALTER` statement to remove password authentication altogether.  
+When run with a priviledged user, this script will go through and identify any users which match a configurable password string.  It can also generate the `ALTER` statement to remove password authentication altogether.  
 
-You can find the script in this repo - [check_user_passwords.sh](./check_user_passwords.sh). 
+You can find the script in this repo - [check_user_passwords.sh](./check_user_passwords.sh).  Configurations settings need to be set at the top of the script. 
 
 example:
 ```bash
@@ -85,7 +103,6 @@ Please ping us in #slack-channel with any issues.
 
 
 `*_default_password_ALTER.sql` contains the `ALTER` commands for the password action.  
-THIS NEEDS TO BE MANUALLY REVIEWED BEFORE EXECUTING TO AVOID BREAKING CHANGES
 ```
 [michaelczabator@myhost test]$ cat test-crdb_default_password_ALTER.sql
 -- test-prod-prod
@@ -98,3 +115,6 @@ ALTER USER "miketest-dba" WITH PASSWORD "luuNz4p6cZkXJQS12VokttFxnwKOmK";
 ...
 ```
 
+THIS NEEDS TO BE MANUALLY REVIEWED BEFORE EXECUTING TO AVOID BREAKING CHANGES
+
+Once complete and reviewed, you can execute the `ALTER` commands in the SQL CLI.
